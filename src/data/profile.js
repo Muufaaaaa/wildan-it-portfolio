@@ -27,6 +27,8 @@ export const profile = {
 
   email: "danfaiz09@gmail.com",
 
+  cvUrl: "/cv/Wildan-Faiz-CV.pdf",
+
   socialLinks: {
     github: "https://github.com/Muufaaaaa",
     linkedin: "https://www.linkedin.com/in/wildan-faiz-782286286/",
