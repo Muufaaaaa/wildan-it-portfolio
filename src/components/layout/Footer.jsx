@@ -19,6 +19,10 @@ const footerLinks = [
     href: "#journey",
   },
   {
+    label: "Achievements",
+    href: "#achievements",
+  },
+  {
     label: "Contact",
     href: "#contact",
   },
@@ -40,6 +44,7 @@ function Footer() {
 
               <p className="text-xl font-black text-white">
                 {brandName}
+
                 {brandSuffix && (
                   <span className="text-cyan-300">.{brandSuffix}</span>
                 )}
@@ -75,7 +80,7 @@ function Footer() {
               Navigation
             </h3>
 
-            <div className="mt-5 grid gap-3">
+            <div className="mt-5 grid grid-cols-2 gap-3">
               {footerLinks.map((link) => (
                 <a
                   key={link.label}

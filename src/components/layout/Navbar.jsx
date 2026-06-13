@@ -7,6 +7,7 @@ const navLinks = [
   { label: "Skills", href: "#skills" },
   { label: "Projects", href: "#projects" },
   { label: "Journey", href: "#journey" },
+  { label: "Achievements", href: "#achievements" },
   { label: "Contact", href: "#contact" },
 ];
 
@@ -38,7 +39,11 @@ function Navbar() {
       }`}
     >
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-        <a href="#home" onClick={closeMenu} className="group flex items-center gap-2">
+        <a
+          href="#home"
+          onClick={closeMenu}
+          className="group flex items-center gap-2"
+        >
           <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-cyan-400/40 bg-cyan-400/10 text-sm font-black text-cyan-300 shadow-[0_0_30px_rgba(34,211,238,0.2)] transition group-hover:scale-105">
             WF
           </div>
@@ -48,7 +53,7 @@ function Navbar() {
           </span>
         </a>
 
-        <div className="hidden items-center gap-8 md:flex">
+        <div className="hidden items-center gap-6 lg:flex">
           {navLinks.map((link) => (
             <a
               key={link.label}
@@ -56,6 +61,7 @@ function Navbar() {
               className="group relative text-sm font-medium text-slate-300 transition hover:text-white"
             >
               {link.label}
+
               <span className="absolute -bottom-2 left-0 h-[2px] w-0 rounded-full bg-cyan-300 transition-all duration-300 group-hover:w-full" />
             </a>
           ))}
@@ -63,30 +69,31 @@ function Navbar() {
 
         <a
           href="#projects"
-          className="hidden rounded-full border border-cyan-400/30 bg-cyan-400/10 px-5 py-2 text-sm font-semibold text-cyan-200 transition hover:bg-cyan-400 hover:text-slate-950 md:inline-flex"
+          className="hidden rounded-full border border-cyan-400/30 bg-cyan-400/10 px-5 py-2 text-sm font-semibold text-cyan-200 transition hover:bg-cyan-400 hover:text-slate-950 lg:inline-flex"
         >
           View Work
         </a>
 
         <button
           type="button"
-          onClick={() => setIsOpen(!isOpen)}
-          className="inline-flex rounded-xl border border-white/10 bg-white/5 p-2 text-white transition hover:bg-white/10 md:hidden"
+          onClick={() => setIsOpen((currentValue) => !currentValue)}
+          className="inline-flex rounded-xl border border-white/10 bg-white/5 p-2 text-white transition hover:bg-white/10 lg:hidden"
           aria-label="Toggle navigation menu"
+          aria-expanded={isOpen}
         >
           {isOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
       </nav>
 
       {isOpen && (
-        <div className="border-t border-white/10 bg-[#050816]/95 px-6 py-5 shadow-2xl backdrop-blur-xl md:hidden">
-          <div className="flex flex-col gap-3">
+        <div className="border-t border-white/10 bg-[#050816]/95 px-6 py-5 shadow-2xl backdrop-blur-xl lg:hidden">
+          <div className="flex max-h-[70vh] flex-col gap-3 overflow-y-auto">
             {navLinks.map((link) => (
               <a
                 key={link.label}
                 href={link.href}
                 onClick={closeMenu}
-                className="rounded-2xl border border-white/5 bg-white/[0.03] px-4 py-3 text-sm font-medium text-slate-300 transition hover:bg-white/8 hover:text-white"
+                className="rounded-2xl border border-white/5 bg-white/[0.03] px-4 py-3 text-sm font-medium text-slate-300 transition hover:bg-white/[0.08] hover:text-white"
               >
                 {link.label}
               </a>
