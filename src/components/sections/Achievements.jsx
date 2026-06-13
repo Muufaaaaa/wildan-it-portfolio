@@ -1,6 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
-import { ArrowUpRight, Code2, Laptop, Rocket, X } from "lucide-react";
+import {
+  ArrowUpRight,
+  Code2,
+  Laptop,
+  Rocket,
+  X,
+} from "lucide-react";
 
 import SectionTitle from "../ui/SectionTitle";
 import { achievements } from "../../data/achievements";
@@ -17,28 +23,7 @@ function Achievements() {
   const [imageErrors, setImageErrors] = useState({});
   const [modalImageError, setModalImageError] = useState(false);
 
-  useEffect(() => {
-    if (!selectedAchievement) {
-      document.body.style.overflow = "";
-      return undefined;
-    }
-
-    document.body.style.overflow = "hidden";
-
-    const handleKeyDown = (event) => {
-      if (event.key === "Escape") {
-        setSelectedAchievement(null);
-        setModalImageError(false);
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.body.style.overflow = "";
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [selectedAchievement]);
+  const closeButtonRef = useRef(null);
 
   const handleImageError = (achievementId) => {
     setImageErrors((currentErrors) => ({
@@ -56,6 +41,34 @@ function Achievements() {
     setSelectedAchievement(null);
     setModalImageError(false);
   };
+
+  useEffect(() => {
+    if (!selectedAchievement) {
+      document.body.style.overflow = "";
+      return undefined;
+    }
+
+    document.body.style.overflow = "hidden";
+
+    const focusTimer = window.setTimeout(() => {
+      closeButtonRef.current?.focus();
+    }, 100);
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        setSelectedAchievement(null);
+        setModalImageError(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", handleKeyDown);
+      window.clearTimeout(focusTimer);
+    };
+  }, [selectedAchievement]);
 
   const completedTotal = achievements.filter(
     (achievement) => achievement.status === "Completed"
@@ -88,7 +101,10 @@ function Achievements() {
             <p className="text-3xl font-black text-white">
               {achievements.length}
             </p>
-            <p className="mt-2 text-sm text-slate-400">Milestones</p>
+
+            <p className="mt-2 text-sm text-slate-400">
+              Milestones
+            </p>
           </motion.div>
 
           <motion.div
@@ -98,8 +114,13 @@ function Achievements() {
             transition={{ duration: 0.55, delay: 0.1 }}
             className="rounded-3xl border border-cyan-300/20 bg-cyan-300/10 p-6 text-center backdrop-blur-xl"
           >
-            <p className="text-3xl font-black text-white">{completedTotal}</p>
-            <p className="mt-2 text-sm text-cyan-100">Completed</p>
+            <p className="text-3xl font-black text-white">
+              {completedTotal}
+            </p>
+
+            <p className="mt-2 text-sm text-cyan-100">
+              Completed
+            </p>
           </motion.div>
 
           <motion.div
@@ -109,7 +130,10 @@ function Achievements() {
             transition={{ duration: 0.55, delay: 0.2 }}
             className="rounded-3xl border border-purple-300/20 bg-purple-300/10 p-6 text-center backdrop-blur-xl"
           >
-            <p className="text-3xl font-black text-white">{skillTotal}+</p>
+            <p className="text-3xl font-black text-white">
+              {skillTotal}+
+            </p>
+
             <p className="mt-2 text-sm text-purple-100">
               Technologies Practiced
             </p>
@@ -122,7 +146,8 @@ function Achievements() {
               achievementIcons[achievement.type] || Code2;
 
             const imageAvailable =
-              achievement.image && !imageErrors[achievement.id];
+              Boolean(achievement.image) &&
+              !imageErrors[achievement.id];
 
             return (
               <motion.article
@@ -144,6 +169,10 @@ function Achievements() {
                       <img
                         src={achievement.image}
                         alt={`${achievement.title} documentation`}
+                        width="1600"
+                        height="900"
+                        loading="lazy"
+                        decoding="async"
                         onError={() =>
                           handleImageError(achievement.id)
                         }
@@ -201,19 +230,23 @@ function Achievements() {
                   </p>
 
                   <div className="mt-5 flex flex-wrap gap-2">
-                    {achievement.skills.slice(0, 5).map((skill) => (
-                      <span
-                        key={skill}
-                        className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-slate-300"
-                      >
-                        {skill}
-                      </span>
-                    ))}
+                    {achievement.skills
+                      .slice(0, 5)
+                      .map((skill) => (
+                        <span
+                          key={skill}
+                          className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-slate-300"
+                        >
+                          {skill}
+                        </span>
+                      ))}
                   </div>
 
                   <button
                     type="button"
-                    onClick={() => handleOpenDetail(achievement)}
+                    onClick={() =>
+                      handleOpenDetail(achievement)
+                    }
                     className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-cyan-400 px-5 py-3 text-sm font-black text-slate-950 transition hover:bg-cyan-300"
                   >
                     View Achievement
@@ -236,12 +269,17 @@ function Achievements() {
           }}
         >
           <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="achievement-modal-title"
+            aria-describedby="achievement-modal-description"
             initial={{ opacity: 0, scale: 0.93, y: 22 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 0.25 }}
             className="relative max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-[2rem] border border-white/10 bg-[#080c1a] p-6 shadow-2xl md:p-8"
           >
             <button
+              ref={closeButtonRef}
               type="button"
               onClick={handleCloseDetail}
               aria-label="Close achievement detail"
@@ -255,7 +293,10 @@ function Achievements() {
                 {selectedAchievement.type}
               </p>
 
-              <h3 className="mt-4 text-3xl font-black text-white md:text-5xl">
+              <h3
+                id="achievement-modal-title"
+                className="mt-4 text-3xl font-black text-white md:text-5xl"
+              >
                 {selectedAchievement.title}
               </h3>
 
@@ -269,11 +310,17 @@ function Achievements() {
             </div>
 
             <div className="mt-8 overflow-hidden rounded-[1.5rem] border border-white/10 bg-gradient-to-br from-cyan-300/10 via-blue-500/10 to-purple-500/10">
-              {selectedAchievement.image && !modalImageError ? (
+              {selectedAchievement.image &&
+              !modalImageError ? (
                 <img
                   src={selectedAchievement.image}
                   alt={`${selectedAchievement.title} documentation`}
-                  onError={() => setModalImageError(true)}
+                  width="1600"
+                  height="900"
+                  decoding="async"
+                  onError={() =>
+                    setModalImageError(true)
+                  }
                   className="h-64 w-full object-cover md:h-96"
                 />
               ) : (
@@ -301,7 +348,10 @@ function Achievements() {
                   Achievement Overview
                 </h4>
 
-                <p className="mt-4 text-sm leading-relaxed text-slate-400">
+                <p
+                  id="achievement-modal-description"
+                  className="mt-4 text-sm leading-relaxed text-slate-400"
+                >
                   {selectedAchievement.description}
                 </p>
 
@@ -329,15 +379,17 @@ function Achievements() {
                   </h4>
 
                   <ul className="mt-4 space-y-3">
-                    {selectedAchievement.highlights.map((highlight) => (
-                      <li
-                        key={highlight}
-                        className="flex gap-3 text-sm leading-relaxed text-slate-400"
-                      >
-                        <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-cyan-300" />
-                        <span>{highlight}</span>
-                      </li>
-                    ))}
+                    {selectedAchievement.highlights.map(
+                      (highlight) => (
+                        <li
+                          key={highlight}
+                          className="flex gap-3 text-sm leading-relaxed text-slate-400"
+                        >
+                          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-cyan-300" />
+                          <span>{highlight}</span>
+                        </li>
+                      )
+                    )}
                   </ul>
                 </div>
 
@@ -347,14 +399,16 @@ function Achievements() {
                   </h4>
 
                   <div className="mt-4 flex flex-wrap gap-2">
-                    {selectedAchievement.skills.map((skill) => (
-                      <span
-                        key={skill}
-                        className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-xs font-semibold text-cyan-100"
-                      >
-                        {skill}
-                      </span>
-                    ))}
+                    {selectedAchievement.skills.map(
+                      (skill) => (
+                        <span
+                          key={skill}
+                          className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-xs font-semibold text-cyan-100"
+                        >
+                          {skill}
+                        </span>
+                      )
+                    )}
                   </div>
                 </div>
               </div>
@@ -363,7 +417,9 @@ function Achievements() {
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               {selectedAchievement.credentialUrl && (
                 <a
-                  href={selectedAchievement.credentialUrl}
+                  href={
+                    selectedAchievement.credentialUrl
+                  }
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex items-center justify-center rounded-full bg-cyan-400 px-6 py-3 text-sm font-black text-slate-950 transition hover:bg-cyan-300"
