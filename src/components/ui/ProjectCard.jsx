@@ -1,18 +1,21 @@
 import { useState } from "react";
 import { motion } from "motion/react";
-import { ArrowUpRight, ImageIcon } from "lucide-react";
+import { ArrowUpRight, Laptop } from "lucide-react";
 
 function ProjectCard({ project, index, onViewDetail }) {
   const [imageError, setImageError] = useState(false);
 
-  const shouldShowImage = project.image && !imageError;
+  const shouldShowImage = Boolean(project.image) && !imageError;
 
   return (
     <motion.article
       initial={{ opacity: 0, y: 26 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.25 }}
-      transition={{ duration: 0.6, delay: index * 0.08 }}
+      transition={{
+        duration: 0.6,
+        delay: index * 0.08,
+      }}
       className="group relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.05] p-6 backdrop-blur-xl transition hover:-translate-y-1 hover:border-cyan-300/40 hover:bg-white/[0.08]"
     >
       <div className="absolute right-0 top-0 h-40 w-40 translate-x-12 -translate-y-12 rounded-full bg-cyan-300/10 blur-3xl transition group-hover:bg-cyan-300/20" />
@@ -30,7 +33,7 @@ function ProjectCard({ project, index, onViewDetail }) {
             <div className="flex h-56 items-center justify-center p-6">
               <div className="text-center">
                 <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-cyan-300/30 bg-cyan-300/10 text-cyan-300">
-                  <ImageIcon size={30} />
+                  <Laptop size={30} />
                 </div>
 
                 <p className="mt-5 text-sm font-semibold uppercase tracking-[0.25em] text-cyan-300">
@@ -90,7 +93,7 @@ function ProjectCard({ project, index, onViewDetail }) {
             <ArrowUpRight size={16} />
           </button>
 
-          {project.liveUrl !== "#" && (
+          {project.liveUrl && (
             <a
               href={project.liveUrl}
               target="_blank"

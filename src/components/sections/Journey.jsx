@@ -1,11 +1,17 @@
 import { motion } from "motion/react";
-import { Code2, Rocket, Laptop } from "lucide-react";
+import { Code2, Laptop, Rocket } from "lucide-react";
+
 import SectionTitle from "../ui/SectionTitle";
 import { journey } from "../../data/journey";
+import { projects } from "../../data/projects";
+import { profile } from "../../data/profile";
 
 const journeyIcons = [Code2, Code2, Rocket, Rocket, Laptop, Rocket];
 
 function Journey() {
+  const currentYear = new Date().getFullYear();
+  const studyStartYear = profile.education.period.split("—")[0].trim();
+
   return (
     <section id="journey" className="relative px-6 py-24">
       <div className="absolute left-1/2 top-20 h-80 w-80 -translate-x-1/2 rounded-full bg-cyan-400/10 blur-[130px]" />
@@ -15,7 +21,7 @@ function Journey() {
         <SectionTitle
           eyebrow="Journey"
           title="Learning & Project Timeline"
-          description="Perjalanan belajar dan pengembangan project dari dasar pemrograman sampai membangun sistem digital yang lebih kompleks."
+          description="Perjalanan belajar dan pengembangan project dari dasar pemrograman hingga membangun sistem digital yang lebih kompleks."
         />
 
         <div className="mb-12 grid gap-4 md:grid-cols-3">
@@ -26,7 +32,7 @@ function Journey() {
             transition={{ duration: 0.55 }}
             className="rounded-3xl border border-white/10 bg-white/[0.05] p-6 text-center backdrop-blur-xl"
           >
-            <p className="text-3xl font-black text-white">2024</p>
+            <p className="text-3xl font-black text-white">{studyStartYear}</p>
             <p className="mt-2 text-sm text-slate-400">Started Journey</p>
           </motion.div>
 
@@ -37,7 +43,7 @@ function Journey() {
             transition={{ duration: 0.55, delay: 0.1 }}
             className="rounded-3xl border border-cyan-300/20 bg-cyan-300/10 p-6 text-center backdrop-blur-xl"
           >
-            <p className="text-3xl font-black text-white">5</p>
+            <p className="text-3xl font-black text-white">{projects.length}</p>
             <p className="mt-2 text-sm text-cyan-100">Projects Built</p>
           </motion.div>
 
@@ -48,7 +54,7 @@ function Journey() {
             transition={{ duration: 0.55, delay: 0.2 }}
             className="rounded-3xl border border-purple-300/20 bg-purple-300/10 p-6 text-center backdrop-blur-xl"
           >
-            <p className="text-3xl font-black text-white">2026</p>
+            <p className="text-3xl font-black text-white">{currentYear}</p>
             <p className="mt-2 text-sm text-purple-100">Active Builder</p>
           </motion.div>
         </div>
@@ -67,8 +73,11 @@ function Journey() {
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.25 }}
-                  transition={{ duration: 0.6, delay: index * 0.08 }}
-                  className={`relative grid gap-6 pl-14 md:grid-cols-2 md:pl-0 ${
+                  transition={{
+                    duration: 0.6,
+                    delay: index * 0.08,
+                  }}
+                  className={`relative grid gap-6 pl-16 md:grid-cols-2 md:pl-0 ${
                     isEven ? "" : "md:[&>article]:col-start-2"
                   }`}
                 >
@@ -86,7 +95,7 @@ function Journey() {
                         </span>
 
                         <span className="rounded-full border border-white/10 bg-[#050816]/70 px-3 py-1 text-xs font-medium text-slate-400">
-                          Milestone 0{index + 1}
+                          Milestone {String(index + 1).padStart(2, "0")}
                         </span>
                       </div>
 
@@ -122,9 +131,9 @@ function Journey() {
 
           <p className="mx-auto mt-5 max-w-3xl text-base leading-relaxed text-slate-300">
             Fokus perkembangan saya saat ini adalah memperkuat kemampuan
-            membangun project end-to-end: mulai dari ide, UI/UX, frontend,
+            membangun project end-to-end, mulai dari ide, UI/UX, frontend,
             backend, database, automation, deployment, sampai integrasi sistem
-            yang bisa digunakan secara nyata.
+            yang dapat digunakan secara nyata.
           </p>
         </motion.div>
       </div>

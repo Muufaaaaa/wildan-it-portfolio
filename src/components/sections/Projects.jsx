@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { motion } from "motion/react";
 import { X } from "lucide-react";
+
 import SectionTitle from "../ui/SectionTitle";
 import ProjectCard from "../ui/ProjectCard";
 import { projects } from "../../data/projects";
@@ -12,6 +13,7 @@ function Projects() {
 
   const categories = useMemo(() => {
     const uniqueCategories = projects.map((project) => project.category);
+
     return ["All", ...new Set(uniqueCategories)];
   }, []);
 
@@ -20,7 +22,9 @@ function Projects() {
       return projects;
     }
 
-    return projects.filter((project) => project.category === activeCategory);
+    return projects.filter((project) => {
+      return project.category === activeCategory;
+    });
   }, [activeCategory]);
 
   const handleViewDetail = (project) => {
@@ -85,7 +89,14 @@ function Projects() {
       </div>
 
       {selectedProject && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 px-6 py-10 backdrop-blur-md">
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 px-4 py-8 backdrop-blur-md sm:px-6"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) {
+              handleCloseModal();
+            }
+          }}
+        >
           <motion.div
             initial={{ opacity: 0, scale: 0.92, y: 24 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -95,7 +106,7 @@ function Projects() {
             <button
               type="button"
               onClick={handleCloseModal}
-              className="absolute right-5 top-5 rounded-full border border-white/10 bg-white/5 p-2 text-slate-300 transition hover:bg-white/10 hover:text-white"
+              className="absolute right-5 top-5 z-10 rounded-full border border-white/10 bg-[#080c1a]/90 p-2 text-slate-300 transition hover:bg-white/10 hover:text-white"
               aria-label="Close project detail"
             >
               <X size={20} />
@@ -131,10 +142,10 @@ function Projects() {
                   src={selectedProject.image}
                   alt={`${selectedProject.title} preview`}
                   onError={() => setModalImageError(true)}
-                  className="h-72 w-full object-cover"
+                  className="h-60 w-full object-cover md:h-80"
                 />
               ) : (
-                <div className="flex h-72 items-center justify-center p-6 text-center">
+                <div className="flex h-60 items-center justify-center p-6 text-center md:h-80">
                   <div>
                     <p className="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-300">
                       {selectedProject.category}
@@ -206,7 +217,7 @@ function Projects() {
             </div>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              {selectedProject.liveUrl !== "#" && (
+              {selectedProject.liveUrl && (
                 <a
                   href={selectedProject.liveUrl}
                   target="_blank"
@@ -217,7 +228,7 @@ function Projects() {
                 </a>
               )}
 
-              {selectedProject.githubUrl !== "#" && (
+              {selectedProject.githubUrl && (
                 <a
                   href={selectedProject.githubUrl}
                   target="_blank"

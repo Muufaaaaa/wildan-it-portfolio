@@ -1,24 +1,26 @@
 import { useState } from "react";
 import { motion } from "motion/react";
 import { Code2, Laptop, Mail, Rocket } from "lucide-react";
+
 import SectionTitle from "../ui/SectionTitle";
+import { profile } from "../../data/profile";
 
 const contactCards = [
   {
     title: "Email",
-    value: "danfaiz09@gmail.com",
-    href: "mailto:danfaiz09@gmail.com",
+    value: profile.email,
+    href: `mailto:${profile.email}`,
     icon: Mail,
   },
   {
     title: "Project Discussion",
-    value: "Open for collaboration",
+    value: profile.availability,
     href: "#projects",
     icon: Code2,
   },
   {
     title: "Focus Area",
-    value: "Web, Game, Automation, Web3",
+    value: profile.focusAreas.join(", "),
     href: "#skills",
     icon: Rocket,
   },
@@ -27,25 +29,21 @@ const contactCards = [
 const socialLinks = [
   {
     label: "GitHub",
-    href: "https://github.com/Muufaaaaa",
+    href: profile.socialLinks.github,
   },
   {
     label: "LinkedIn",
-    href: "https://www.linkedin.com/in/wildan-faiz-782286286/",
+    href: profile.socialLinks.linkedin,
   },
   {
     label: "Instagram",
-    href: "https://www.instagram.com/muufa_5078/",
+    href: profile.socialLinks.instagram,
   },
   {
     label: "WhatsApp",
-    href: "https://wa.me/6289652173426",
+    href: profile.socialLinks.whatsapp,
   },
-];
-
-function encodeFormData(data) {
-  return new URLSearchParams(data).toString();
-}
+].filter((link) => Boolean(link.href));
 
 function Contact() {
   const [formData, setFormData] = useState({
@@ -74,13 +72,29 @@ function Contact() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setIsSubmitting(true);
-    setFormStatus({ type: "", message: "" });
 
-    const payload = {
-      "form-name": "contact",
-      ...formData,
-    };
+    const isLocalhost =
+      window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1";
+
+    if (isLocalhost) {
+      setFormStatus({
+        type: "error",
+        message:
+          "Netlify Forms hanya dapat dites setelah website di-deploy ke Netlify.",
+      });
+
+      return;
+    }
+
+    setIsSubmitting(true);
+    setFormStatus({
+      type: "",
+      message: "",
+    });
+
+    const form = event.currentTarget;
+    const submittedData = new FormData(form);
 
     try {
       const response = await fetch("/", {
@@ -88,16 +102,25 @@ function Contact() {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
-        body: encodeFormData(payload),
+        body: new URLSearchParams(submittedData).toString(),
       });
 
       if (!response.ok) {
-        throw new Error("Form submission failed");
+        const responseText = await response.text();
+
+        console.error("Netlify Forms error:", {
+          status: response.status,
+          statusText: response.statusText,
+          response: responseText,
+        });
+
+        throw new Error(`Submission failed: ${response.status}`);
       }
 
       setFormStatus({
         type: "success",
-        message: "Pesan berhasil dikirim. Terima kasih sudah menghubungi saya!",
+        message:
+          "Pesan berhasil dikirim. Terima kasih sudah menghubungi saya!",
       });
 
       setFormData({
@@ -107,11 +130,15 @@ function Contact() {
         message: "",
         "bot-field": "",
       });
+
+      form.reset();
     } catch (error) {
+      console.error("Contact form error:", error);
+
       setFormStatus({
         type: "error",
         message:
-          "Pesan belum bisa dikirim. Jika masih gagal, hubungi langsung lewat email.",
+          "Pesan belum bisa dikirim. Silakan hubungi saya langsung melalui email.",
       });
     } finally {
       setIsSubmitting(false);
@@ -149,7 +176,7 @@ function Contact() {
 
               <p className="mt-4 text-sm leading-relaxed text-slate-300 md:text-base">
                 Punya ide project, tugas kelompok, website, game, bot, atau
-                sistem otomasi? Kirim pesan lewat form ini atau hubungi saya
+                sistem otomasi? Kirim pesan melalui form ini atau hubungi saya
                 langsung melalui email.
               </p>
             </div>
@@ -165,18 +192,22 @@ function Contact() {
                     initial={{ opacity: 0, y: 22 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, amount: 0.25 }}
-                    transition={{ duration: 0.55, delay: index * 0.08 }}
+                    transition={{
+                      duration: 0.55,
+                      delay: index * 0.08,
+                    }}
                     className="group flex items-center gap-4 rounded-3xl border border-white/10 bg-white/[0.05] p-5 backdrop-blur-xl transition hover:-translate-y-1 hover:border-cyan-300/40 hover:bg-white/[0.08]"
                   >
                     <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-cyan-300/20 bg-cyan-300/10 text-cyan-300 transition group-hover:scale-110">
                       <Icon size={24} />
                     </div>
 
-                    <div>
+                    <div className="min-w-0">
                       <p className="text-sm font-semibold text-cyan-300">
                         {card.title}
                       </p>
-                      <p className="mt-1 text-sm text-slate-300">
+
+                      <p className="mt-1 break-words text-sm text-slate-300">
                         {card.value}
                       </p>
                     </div>
@@ -185,30 +216,27 @@ function Contact() {
               })}
             </div>
 
-            <div className="rounded-[2rem] border border-white/10 bg-white/[0.05] p-6 backdrop-blur-xl">
-              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-300">
-                Social Links
-              </p>
+            {socialLinks.length > 0 && (
+              <div className="rounded-[2rem] border border-white/10 bg-white/[0.05] p-6 backdrop-blur-xl">
+                <p className="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-300">
+                  Social Links
+                </p>
 
-              <div className="mt-5 flex flex-wrap gap-3">
-                {socialLinks.map((link) => (
-                  <a
-                    key={link.label}
-                    href={link.href}
-                    target={link.href === "#" ? "_self" : "_blank"}
-                    rel="noreferrer"
-                    className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm font-semibold text-slate-300 transition hover:border-cyan-300/40 hover:bg-cyan-300/10 hover:text-cyan-200"
-                  >
-                    {link.label}
-                  </a>
-                ))}
+                <div className="mt-5 flex flex-wrap gap-3">
+                  {socialLinks.map((link) => (
+                    <a
+                      key={link.label}
+                      href={link.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm font-semibold text-slate-300 transition hover:border-cyan-300/40 hover:bg-cyan-300/10 hover:text-cyan-200"
+                    >
+                      {link.label}
+                    </a>
+                  ))}
+                </div>
               </div>
-
-              <p className="mt-4 text-xs leading-relaxed text-slate-500">
-                Ganti tanda # di socialLinks dengan link asli GitHub, LinkedIn,
-                Instagram, atau WhatsApp lu.
-              </p>
-            </div>
+            )}
           </motion.div>
 
           <motion.div
@@ -221,6 +249,7 @@ function Contact() {
             <form
               name="contact"
               method="POST"
+              action="/"
               data-netlify="true"
               netlify-honeypot="bot-field"
               onSubmit={handleSubmit}
@@ -246,13 +275,15 @@ function Contact() {
                 >
                   Nama Lengkap
                 </label>
+
                 <input
                   id="name"
                   name="name"
                   type="text"
                   value={formData.name}
                   onChange={handleChange}
-                  placeholder="Masukkan nama lu"
+                  placeholder="Masukkan nama lengkap"
+                  autoComplete="name"
                   required
                   className="w-full rounded-2xl border border-white/10 bg-[#050816]/70 px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-cyan-300/50 focus:bg-[#050816]"
                 />
@@ -265,6 +296,7 @@ function Contact() {
                 >
                   Email
                 </label>
+
                 <input
                   id="email"
                   name="email"
@@ -272,6 +304,7 @@ function Contact() {
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="nama@email.com"
+                  autoComplete="email"
                   required
                   className="w-full rounded-2xl border border-white/10 bg-[#050816]/70 px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-cyan-300/50 focus:bg-[#050816]"
                 />
@@ -284,6 +317,7 @@ function Contact() {
                 >
                   Subjek
                 </label>
+
                 <input
                   id="subject"
                   name="subject"
@@ -303,20 +337,22 @@ function Contact() {
                 >
                   Pesan
                 </label>
+
                 <textarea
                   id="message"
                   name="message"
                   rows="6"
                   value={formData.message}
                   onChange={handleChange}
-                  placeholder="Tulis pesan lu di sini..."
+                  placeholder="Tulis pesan di sini..."
                   required
                   className="w-full resize-none rounded-2xl border border-white/10 bg-[#050816]/70 px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-cyan-300/50 focus:bg-[#050816]"
-                ></textarea>
+                />
               </div>
 
               {formStatus.message && (
                 <div
+                  role="status"
                   className={`rounded-2xl border px-4 py-3 text-sm ${
                     formStatus.type === "success"
                       ? "border-emerald-300/30 bg-emerald-300/10 text-emerald-200"

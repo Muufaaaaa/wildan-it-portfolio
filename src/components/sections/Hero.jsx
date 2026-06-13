@@ -1,6 +1,16 @@
 import { useEffect, useState } from "react";
 import { motion } from "motion/react";
-import { ArrowUpRight, Code2, Laptop, Rocket, Sparkles, Terminal } from "lucide-react";
+import {
+  ArrowUpRight,
+  Code2,
+  Laptop,
+  Rocket,
+  Sparkles,
+  Terminal,
+} from "lucide-react";
+
+import { projects } from "../../data/projects";
+import { profile } from "../../data/profile";
 
 const roles = [
   "Web Developer",
@@ -10,37 +20,16 @@ const roles = [
   "Discord Bot Developer",
 ];
 
-const stats = [
+const floatingPositions = [
   {
-    value: "5",
-    label: "Projects",
-  },
-  {
-    value: "5",
-    label: "Focus Areas",
-  },
-  {
-    value: "2026",
-    label: "Active Builder",
-  },
-];
-
-const floatingCards = [
-  {
-    title: "Recyclick",
-    category: "Laravel EcoCommerce",
     position: "left-0 top-10",
     delay: 0,
   },
   {
-    title: "CampusPass",
-    category: "Web3 Certificate",
     position: "right-0 top-36",
     delay: 0.25,
   },
   {
-    title: "Sawit Game",
-    category: "Roblox Education",
     position: "left-10 bottom-10",
     delay: 0.5,
   },
@@ -50,6 +39,29 @@ function Hero() {
   const [roleIndex, setRoleIndex] = useState(0);
   const [text, setText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const currentYear = new Date().getFullYear();
+
+  const stats = [
+    {
+      value: projects.length,
+      label: "Projects",
+    },
+    {
+      value: profile.focusAreas.length,
+      label: "Focus Areas",
+    },
+    {
+      value: currentYear,
+      label: "Active Builder",
+    },
+  ];
+
+  const floatingProjects = projects.slice(0, 3).map((project, index) => ({
+    title: project.title,
+    category: project.subtitle,
+    ...floatingPositions[index],
+  }));
 
   useEffect(() => {
     const currentRole = roles[roleIndex];
@@ -63,7 +75,9 @@ function Hero() {
 
         if (isDeleting && text === "") {
           setIsDeleting(false);
-          setRoleIndex((prevIndex) => (prevIndex + 1) % roles.length);
+          setRoleIndex((currentIndex) => {
+            return (currentIndex + 1) % roles.length;
+          });
           return;
         }
 
@@ -89,7 +103,7 @@ function Hero() {
       <div className="absolute left-10 top-28 h-72 w-72 rounded-full bg-cyan-400/20 blur-[120px]" />
       <div className="absolute bottom-10 right-10 h-80 w-80 rounded-full bg-purple-500/20 blur-[130px]" />
 
-      <div className="relative mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-[1.05fr_0.95fr]">
+      <div className="relative mx-auto grid w-full max-w-7xl items-center gap-14 lg:grid-cols-[1.05fr_0.95fr]">
         <motion.div
           initial={{ opacity: 0, y: 28 }}
           animate={{ opacity: 1, y: 0 }}
@@ -103,21 +117,20 @@ function Hero() {
           <h1 className="text-4xl font-black leading-tight tracking-tight text-white md:text-6xl lg:text-7xl">
             Hi, I&apos;m
             <span className="block bg-gradient-to-r from-cyan-300 via-blue-400 to-purple-400 bg-clip-text text-transparent">
-              Wildan Faiz
+              {profile.name}
             </span>
           </h1>
 
-          <div className="mt-5 h-10 text-xl font-bold text-slate-200 md:text-2xl">
+          <div className="mt-5 min-h-10 text-xl font-bold text-slate-200 md:text-2xl">
             <span className="text-slate-400">I build as a </span>
             <span className="text-cyan-300">{text}</span>
             <span className="ml-1 animate-pulse text-cyan-300">|</span>
           </div>
 
           <p className="mt-6 max-w-2xl text-base leading-relaxed text-slate-300 md:text-lg">
-            Informatics Engineering Student focused on Web Development, Game
-            Development, Automation, and Web3. I build practical digital
-            products from Laravel e-commerce systems and Web3 certificate
-            platforms to Roblox educational games and Discord automation bots.
+            {profile.shortDescription} Saya membangun produk digital mulai dari
+            sistem e-commerce Laravel dan sertifikat Web3 hingga game edukasi
+            Roblox dan bot Discord.
           </p>
 
           <div className="mt-8 flex flex-col gap-4 sm:flex-row">
@@ -126,6 +139,7 @@ function Hero() {
               className="group inline-flex items-center justify-center gap-2 rounded-full bg-cyan-400 px-6 py-3 font-bold text-slate-950 transition hover:bg-cyan-300"
             >
               View Projects
+
               <ArrowUpRight
                 size={18}
                 className="transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
@@ -140,7 +154,7 @@ function Hero() {
             </a>
           </div>
 
-          <div className="mt-10 grid max-w-xl grid-cols-3 gap-4">
+          <div className="mt-10 grid max-w-xl grid-cols-3 gap-3 sm:gap-4">
             {stats.map((item) => (
               <div
                 key={item.label}
@@ -149,6 +163,7 @@ function Hero() {
                 <p className="text-2xl font-black text-white md:text-3xl">
                   {item.value}
                 </p>
+
                 <p className="mt-1 text-xs text-slate-400 md:text-sm">
                   {item.label}
                 </p>
@@ -163,19 +178,23 @@ function Hero() {
           transition={{ duration: 0.7, delay: 0.15 }}
           className="relative hidden min-h-[560px] lg:block"
         >
-          {floatingCards.map((card) => (
+          {floatingProjects.map((project) => (
             <motion.div
-              key={card.title}
+              key={project.title}
               initial={{ opacity: 0, y: 22 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: card.delay + 0.35 }}
-              className={`floating-card absolute ${card.position} z-20 w-56 rounded-3xl border border-white/10 bg-white/[0.07] p-5 shadow-2xl backdrop-blur-xl`}
+              transition={{
+                duration: 0.7,
+                delay: project.delay + 0.35,
+              }}
+              className={`floating-card absolute ${project.position} z-20 w-56 rounded-3xl border border-white/10 bg-white/[0.07] p-5 shadow-2xl backdrop-blur-xl`}
             >
               <p className="text-sm font-semibold text-cyan-300">
-                {card.category}
+                {project.category}
               </p>
+
               <h3 className="mt-2 text-lg font-bold text-white">
-                {card.title}
+                {project.title}
               </h3>
             </motion.div>
           ))}
@@ -202,21 +221,17 @@ function Hero() {
               </p>
 
               <p className="pl-5 text-slate-300">
-                name: <span className="text-cyan-300">"Wildan Faiz"</span>,
+                name: <span className="text-cyan-300">"{profile.name}"</span>,
               </p>
 
               <p className="pl-5 text-slate-300">
-                role:{" "}
-                <span className="text-blue-300">
-                  "Informatics Engineering Student"
-                </span>
-                ,
+                role: <span className="text-blue-300">"{profile.role}"</span>,
               </p>
 
               <p className="pl-5 text-slate-300">
                 focus:{" "}
                 <span className="text-purple-300">
-                  ["Web", "Game", "Automation", "Web3"]
+                  {JSON.stringify(profile.focusAreas)}
                 </span>
                 ,
               </p>
@@ -224,7 +239,7 @@ function Hero() {
               <p className="pl-5 text-slate-300">
                 status:{" "}
                 <span className="text-emerald-300">
-                  "Building digital products"
+                  "{profile.availability}"
                 </span>
                 ,
               </p>
