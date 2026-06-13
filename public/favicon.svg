@@ -1,0 +1,39 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 64 64"
+  role="img"
+  aria-labelledby="title"
+>
+  <title id="title">Wildan Faiz Portfolio</title>
+
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#22d3ee" />
+      <stop offset="50%" stop-color="#3b82f6" />
+      <stop offset="100%" stop-color="#8b5cf6" />
+    </linearGradient>
+
+    <linearGradient id="foreground" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f8fafc" />
+      <stop offset="100%" stop-color="#cffafe" />
+    </linearGradient>
+  </defs>
+
+  <rect width="64" height="64" rx="18" fill="#050816" />
+
+  <rect
+    x="3"
+    y="3"
+    width="58"
+    height="58"
+    rx="16"
+    fill="none"
+    stroke="url(#background)"
+    stroke-width="3"
+  />
+
+  <path
+    d="M13 20h7l5 23 6-17h5l6 17 5-23h7l-8 29h-7l-5.5-15.5L28 49h-7L13 20Z"
+    fill="url(#foreground)"
+  />
+</svg>
